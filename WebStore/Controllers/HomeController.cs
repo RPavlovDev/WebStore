@@ -13,15 +13,23 @@ namespace WebStore.Controllers
 
         public IActionResult SecondAction(string id) => Content($"Action with value id:{id}");
 
-        public IActionResult Employees()
-        {
-            return View(EmployeeContext.Employees);
-        }
+        public IActionResult NotFoundPage() => View();
 
-        public IActionResult EmployeeDetail(int employeeId)
-        {
-            var employee = EmployeeContext.Employees.FirstOrDefault(x => x.Id == employeeId);
-            return employee != null ? View(employee) : null;
-        }
+        public IActionResult Blog() => View();
+
+        public IActionResult BlogSingle() => View();
+
+        public IActionResult Cart() => View();
+
+        public IActionResult Checkout() => View();
+
+        public IActionResult ContactUs() => View();
+
+        public IActionResult Login() => View();
+
+        public IActionResult ProductDetails() => View();
+
+        public IActionResult Shop() => View();
+
     }
 }
