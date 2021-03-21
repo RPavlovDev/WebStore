@@ -1,0 +1,60 @@
+﻿@model WebStore.Models.Employee
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>@Model.LastName @Model.FirstName</title>
+</head>
+<body>
+
+    <h3>Подробная информация о сотруднике</h3>
+
+    <form>
+        <div class="form-group">
+            <label class="col-sm-2">Id:</label>
+            <label>@Model.Id</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">LastName:</label>
+            <label>@Model.LastName</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">FirstName:</label>
+            <label>@Model.FirstName</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">Patronimic:</label>
+            <label>@Model.Patronymic</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">Age:</label>
+            <label>@Model.Age</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">BirthDate:</label>
+            <label>@Model.BirthDate.ToShortDateString()</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">CityDepartment:</label>
+            <label>@Model.CityDepartment</label>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">Salary:</label>
+            <label>@Model.Salary</label>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <a class="btn btn-primary me-2" href='@Url.Action("Employees")'>Back</a>
+            </div>
+        </div>
+    </form>
+
+</body>
+</html>
