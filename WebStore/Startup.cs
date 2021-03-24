@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Infrastructure.Services;
+using WebStore.Infrastructure.Services.Interfaces;
 
 namespace WebStore
 {
@@ -14,6 +16,7 @@ namespace WebStore
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
             services.AddControllersWithViews();
         }
 
