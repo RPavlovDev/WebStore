@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace WebStore.Models
 {
     public class Employee
     {
+        [Key]
         public int Id { get; set; }
 
         public string FirstName { get; set; }
@@ -22,6 +24,8 @@ namespace WebStore.Models
         public string Salary { get; set; }
 
         private double _age;
+
+        
         public double Age
         {
             get

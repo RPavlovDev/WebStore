@@ -79,16 +79,16 @@ namespace WebStore.Controllers
                 BirthDate = modifiedEmployee.BirthDate
             };
 
-            if (employee.FirstName.Any(char.IsDigit))
+            if (!string.IsNullOrEmpty(employee.FirstName) && employee.FirstName.Any(char.IsDigit))
                 ModelState.AddModelError("FirstName", "Name should not contain digits.");
 
-            if (employee.LastName.Any(char.IsDigit))
+            if (!string.IsNullOrEmpty(employee.LastName) && employee.LastName.Any(char.IsDigit))
                 ModelState.AddModelError("LastName", "LastName should not contain digits.");
 
-            if (employee.Patronymic.Any(char.IsDigit))
+            if (!string.IsNullOrEmpty(employee.Patronymic) && employee.Patronymic.Any(char.IsDigit))
                 ModelState.AddModelError("Patronymic", "Patronymic should not contain digits.");
 
-            if (employee.CityDepartment.Any(char.IsDigit))
+            if (!string.IsNullOrEmpty(employee.CityDepartment) && employee.CityDepartment.Any(char.IsDigit))
                 ModelState.AddModelError("CityDepartment", "CityDepartment should not contain digits.");
 
             if (!employee.Salary.All(char.IsDigit))
