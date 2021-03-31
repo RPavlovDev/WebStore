@@ -4,10 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebStore.Data;
-using WebStore.Domain.Entities;
+using WebStore.DAL.Context;
 
-namespace WebStore.Migrations
+namespace WebStore.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -65,6 +64,10 @@ namespace WebStore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("SectionId");
+
                     b.ToTable("Products");
                 });
 
@@ -86,42 +89,46 @@ namespace WebStore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ParentId");
+
                     b.ToTable("Sections");
                 });
 
-            modelBuilder.Entity("WebStore.Models.Employee", b =>
+            modelBuilder.Entity("WebStore.Domain.Entities.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasOne("WebStore.Domain.Entities.Brand", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId");
 
-                    b.Property<double>("Age")
-                        .HasColumnType("float");
+                    b.HasOne("WebStore.Domain.Entities.Section", "Section")
+                        .WithMany("Products")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
+                    b.Navigation("Brand");
 
-                    b.Property<string>("CityDepartment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Patronymic")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Salary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Employees");
+                    b.Navigation("Section");
                 });
-            
+
+            modelBuilder.Entity("WebStore.Domain.Entities.Section", b =>
+                {
+                    b.HasOne("WebStore.Domain.Entities.Section", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("WebStore.Domain.Entities.Brand", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("WebStore.Domain.Entities.Section", b =>
+                {
+                    b.Navigation("Products");
+                });
 #pragma warning restore 612, 618
         }
     }

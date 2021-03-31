@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Infrastructure.Services;
 using WebStore.Infrastructure.Services.Interfaces;
@@ -28,16 +29,17 @@ namespace WebStore
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 );
-            services.AddTransient<IEmployeesData, InDbEmployeesData>();
+            services.AddTransient<WebStoreDbInitializer>();
+            services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
             services.AddTransient<IProductData, InDbProductData>();
             services.AddTransient<IPrinter, StoragePrinter>();
             services.AddTransient<IMessageStorage, MessageStorege>();
             services.AddControllersWithViews();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, WebStoreDbInitializer db)
         {
-
+            db.Initialize();
             var printer = app.ApplicationServices.GetRequiredService<IPrinter>();
             if (env.IsDevelopment())
             {

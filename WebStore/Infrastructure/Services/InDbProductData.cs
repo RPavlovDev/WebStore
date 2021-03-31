@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Domain;
 using WebStore.Domain.Entities;
@@ -14,34 +15,23 @@ namespace WebStore.Infrastructure.Services
     {
         private readonly AppDbContext _db;
 
-        public InDbProductData(AppDbContext db)
-        {
-            _db = db;
-        }
-        public IEnumerable<Section> GetSections() => _db.Sections;
+        public InDbProductData(AppDbContext db) => _db = db;
 
-        public IEnumerable<Brand> GetBrands() => _db.Brands;
+        public IEnumerable<Section> GetSections() => _db.Sections.Include(s => s.Products);
+
+        public IEnumerable<Brand> GetBrands() => _db.Brands.Include(b => b.Products);
 
         public IEnumerable<Product> GetProducts(ProductFilter Filter = null)
         {
-            if (Filter?.SectionId == null && Filter?.BrandId == null)
-                return _db.Products.IgnoreQueryFilters();
-
-            var query = _db.Products;
+            IQueryable<Product> query = _db.Products;
 
             if (Filter?.SectionId is { } section_id)
-            {
-                _db.SectionId = section_id;
-                query.Include(x => x.SectionId);
-            }
+                query = query.Where(product => product.SectionId == section_id);
 
             if (Filter?.BrandId is { } brand_id)
-            {
-                _db.BrandId = brand_id;
-                query.Include(x => x.BrandId);
-            }
+                query = query.Where(product => product.BrandId == brand_id);
 
-            return query.ToList();
+            return query;
         }
     }
 }
