@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebStore.DAL.Context;
 using WebStore.Data;
+using WebStore.Domain.Entities;
 using WebStore.Infrastructure.Services;
 using WebStore.Infrastructure.Services.Interfaces;
 
@@ -29,18 +31,27 @@ namespace WebStore
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 );
+
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
+
             services.AddTransient<WebStoreDbInitializer>();
+
             services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
+
             services.AddTransient<IProductData, InDbProductData>();
+
             services.AddTransient<IPrinter, StoragePrinter>();
+
             services.AddTransient<IMessageStorage, MessageStorege>();
+
             services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, WebStoreDbInitializer db)
         {
             db.Initialize();
-            var printer = app.ApplicationServices.GetRequiredService<IPrinter>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -48,6 +59,9 @@ namespace WebStore
 
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

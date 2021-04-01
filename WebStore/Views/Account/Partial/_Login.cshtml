@@ -1,0 +1,26 @@
+﻿@model AccountViewModel
+
+<div class="login-form">
+    <!--login form-->
+    <h2>Login to your account</h2>
+    <form method="post" asp-controller="Account" asp-action="Login">
+        <div asp-validation-summary="All"></div>
+        <div>
+            <input asp-for="@Model.Login.Email" placeholder="@nameof(Model.Login.Email)" />
+            <span asp-validation-for="@Model.Login.Email"></span>
+        </div>
+        <div>
+            <input asp-for="@Model.Login.Password" placeholder="@nameof(Model.Login.Password)" />
+            <span asp-validation-for="@Model.Login.Password"></span>
+        </div>
+        <div>
+            <span>
+                <input type="checkbox" class="checkbox" asp-for="@Model.Login.RememberMe">
+                Keep me signed in
+            </span>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-default">Login</button>
+        </div>
+    </form>
+</div><!--/login form-->
