@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <p class="text-danger">У вас недостаточно прав для выполнения данной операции</p>
+    @if (ViewBag.ReturnUrl != null)
+    {
+        <a href="/@ViewBag.ReturnUrl">Назад</a>
+    }
+</div>

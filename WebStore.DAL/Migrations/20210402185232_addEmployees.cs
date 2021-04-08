@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebStore.Migrations
+namespace WebStore.DAL.Migrations
 {
-    public partial class addEmployeesToDatabase : Migration
+    public partial class addEmployees : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

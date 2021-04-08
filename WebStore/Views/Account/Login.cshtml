@@ -1,0 +1,42 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container">
+    <section id="form">
+        <!--form-->
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 col-sm-offset-1">
+                    <div class="login-form">
+                        <!--login form-->
+                        <h2>Login to your account</h2>
+                        <form method="post" asp-controller="Account" asp-action="Login" asp-antiforgery="true" asp-Route-ReturnUrl="@Model.ReturnUrl">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div>
+                                <input asp-for="@Model.Email" placeholder="@nameof(Model.Email)" />
+                                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <input asp-for="@Model.Password" placeholder="@nameof(Model.Password)" />
+                                <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <span>
+                                    <input type="checkbox" class="checkbox" asp-for="@Model.RememberMe">
+                                    Keep me signed in
+                                </span>
+                            </div>
+                            <div>
+                                <a asp-controller="Account" asp-action="Register" asp-antiforgery="true" class="text-warning">Еще не зарегистрированы?</a>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-default">Login</button>
+                            </div>
+                        </form>
+                    </div><!--/login form-->
+                </div>
+            </div>
+        </div>
+    </section><!--/form-->
+</div>
