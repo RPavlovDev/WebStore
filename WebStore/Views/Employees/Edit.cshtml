@@ -1,11 +1,19 @@
-﻿@model WebStore.Models.Employee
+﻿@model WebStore.ViewModels.EmployeeViewModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
 <div class="container">
-    <h1>Edit</h1>
+
+    @if (Model.Id == 0)
+    {
+        <h1>Create</h1>
+    }
+    else
+    {
+        <h1>Edit</h1>
+    }
 
     <h4>Employee</h4>
     <hr />
