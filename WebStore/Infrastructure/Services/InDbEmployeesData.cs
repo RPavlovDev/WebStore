@@ -8,35 +8,38 @@ using WebStore.Models;
 
 namespace WebStore.Infrastructure.Services
 {
-    public class InMemoryEmployeesData : IEmployeesData
+    public class InDbEmployeesData : IEmployeesData
     {
-        private readonly List<Employee> _Employees;
         private int _CurrentMaxId;
-        public InMemoryEmployeesData()
+        private readonly AppDbContext _db;
+
+        public InDbEmployeesData(AppDbContext db)
         {
-            _Employees = TestData.Employees;
-            _CurrentMaxId = _Employees.DefaultIfEmpty().Max(x => x?.Id ?? 1);
+            _db = db;
+            _CurrentMaxId = _db.Employees.ToList().DefaultIfEmpty().Max(x => x?.Id ?? 1);
         }
         public IEnumerable<Employee> Get()
         {
-            return _Employees;
+            return _db.Employees;
         }
 
         public Employee Get(int id)
         {
-            return _Employees.FirstOrDefault(x => x.Id == id);
+            return _db.Employees.FirstOrDefault(x => x.Id == id);
         }
 
         public int Add(Employee employee)
         {
-            if(employee == null) 
+            if (employee == null)
                 throw new ArgumentNullException();
 
-            if (_Employees.Contains(employee)) 
-                return employee.Id;
+            var dbEmployee = Get(employee.Id);
+            if (dbEmployee != null)
+                return dbEmployee.Id;
 
-            employee.Id = ++_CurrentMaxId;
-            _Employees.Add(employee);
+            ++_CurrentMaxId;
+            _db.Employees.Add(employee);
+            _db.SaveChanges();
 
             return employee.Id;
         }
@@ -46,11 +49,8 @@ namespace WebStore.Infrastructure.Services
             if (employee == null)
                 throw new ArgumentNullException();
 
-            if (_Employees.Contains(employee))
-                return;
-
             var dbEmployee = Get(employee.Id);
-            if(dbEmployee == null)
+            if (dbEmployee == null)
                 return;
 
             dbEmployee.FirstName = employee.FirstName;
@@ -60,13 +60,21 @@ namespace WebStore.Infrastructure.Services
             dbEmployee.CityDepartment = employee.CityDepartment;
             dbEmployee.Salary = employee.Salary;
 
+            _db.Employees.Update(dbEmployee);
+            _db.SaveChanges();
         }
 
         public bool Delete(int id)
         {
             var dbEmployee = Get(id);
 
-            return dbEmployee != null && _Employees.Remove(dbEmployee);
+            if (dbEmployee != null)
+            {
+                _db.Employees.Remove(dbEmployee);
+                _db.SaveChanges();
+            }
+            
+            return dbEmployee != null;
         }
     }
 }
