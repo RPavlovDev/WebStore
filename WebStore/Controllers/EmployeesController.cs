@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using WebStore.Domain.Entities;
 using WebStore.Infrastructure.Services.Interfaces;
-using WebStore.Models;
 using WebStore.ViewModels;
 
 namespace WebStore.Controllers
@@ -41,6 +42,7 @@ namespace WebStore.Controllers
             });
         }
 
+        [Authorize(Roles = "moderator")]
         public IActionResult Edit(int? Id)
         {
             if (Id is null)
@@ -63,8 +65,10 @@ namespace WebStore.Controllers
             });
         }
 
+        [Authorize(Roles = "admin")]
         public IActionResult Create() => View("Edit", new EmployeeViewModel());
 
+        [Authorize(Roles = "moderator")]
         [HttpPost]
         public IActionResult Edit(EmployeeViewModel modifiedEmployee)
         {
@@ -108,6 +112,7 @@ namespace WebStore.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "admin")]
         public IActionResult Delete(int Id)
         {
             var employee = _EmployeesData.Get(Id);
@@ -127,6 +132,7 @@ namespace WebStore.Controllers
             });
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public IActionResult Delete(EmployeeViewModel deletingEmployee)
         {

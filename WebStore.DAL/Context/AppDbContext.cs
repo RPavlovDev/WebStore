@@ -9,7 +9,7 @@ using WebStore.Domain.Entities;
 
 namespace WebStore.DAL.Context
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser>
+    public class AppDbContext : IdentityDbContext<User, Role, string>
     {
         //public int SectionId { get; set; }
         //public int BrandId { get; set; }
@@ -24,7 +24,7 @@ namespace WebStore.DAL.Context
         //    modelBuilder.Entity<Product>().HasQueryFilter(p => p.SectionId == this.SectionId);
         //}
 
-        //public DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Product> Products { get; set; }

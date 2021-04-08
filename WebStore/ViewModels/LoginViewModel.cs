@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebStore.ViewModels
 {
@@ -16,6 +17,7 @@ namespace WebStore.ViewModels
         [Display(Name = "Запомнить?")]
         public bool RememberMe { get; set; }
 
+        [HiddenInput(DisplayValue = false)]
         public string ReturnUrl { get; set; }
     }
 }

@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace WebStore.Domain.Entities
 {
-    public class User : IdentityUser
+    public class Role : IdentityRole
     {
-
-        public string Name { get; set; }
+        public const string Administrators = "Administrators";
+        public const string Users = "Users";
 
     }
 }

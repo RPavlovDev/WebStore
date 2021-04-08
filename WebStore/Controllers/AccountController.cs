@@ -27,14 +27,16 @@ namespace WebStore.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register(AccountViewModel model)
+        public IActionResult Register() => View(new RegisterViewModel());
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Register.Email, UserName = model.Register.Email, Name = model.Register.Name };
+                User user = new User { Email = model.Email, UserName = model.Email, Name = model.Name };
                 // добавляем пользователя
-                var result = await _userManager.CreateAsync(user, model.Register.Password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // установка куки
@@ -49,29 +51,82 @@ namespace WebStore.Controllers
                     }
                 }
             }
-            return RedirectToAction("Index", model);
+            return View(model);
         }
+
+        [HttpGet]
+        public IActionResult Login(string returnUrl) => View(new LoginViewModel() { ReturnUrl = returnUrl });
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(AccountViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var result =
-                    await _signInManager.PasswordSignInAsync(model.Login.Email, model.Login.Password, model.Login.RememberMe, false);
+                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                        return RedirectToAction("Index", "Home");
+                    return LocalRedirect(model.ReturnUrl ?? "/");
                 }
                 else
                 {
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
                 }
             }
-            return RedirectToAction("Index");
+            return View(model);
         }
-        
+        public IActionResult AccessDenied(string ReturnUrl)
+        {
+            ViewBag.ReturnUrl = ReturnUrl;
+            return View();
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Register(AccountViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        User user = new User { Email = model.Register.Email, UserName = model.Register.Email, Name = model.Register.Name };
+        //        // добавляем пользователя
+        //        var result = await _userManager.CreateAsync(user, model.Register.Password);
+        //        if (result.Succeeded)
+        //        {
+        //            // установка куки
+        //            await _signInManager.SignInAsync(user, false);
+        //            return RedirectToAction("Index", "Home");
+        //        }
+        //        else
+        //        {
+        //            foreach (var error in result.Errors)
+        //            {
+        //                ModelState.AddModelError(string.Empty, error.Description);
+        //            }
+        //        }
+        //    }
+        //    return RedirectToAction("Index", model);
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Login(AccountViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var result =
+        //            await _signInManager.PasswordSignInAsync(model.Login.Email, model.Login.Password, model.Login.RememberMe, false);
+        //        if (result.Succeeded)
+        //        {
+        //                return RedirectToAction("Index", "Home");
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+        //        }
+        //    }
+        //    return RedirectToAction("Index");
+        //}
+
         public async Task<IActionResult> Logout()
         {
             // удаляем аутентификационные куки
