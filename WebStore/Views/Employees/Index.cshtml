@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebStore.Domain.Entities.Employee>
+﻿@using WebStore.Domain.Entities
+@model IEnumerable<WebStore.Domain.Entities.Employee>
 
 @{
     ViewData["Title"] = "Index";
@@ -23,6 +24,11 @@
                 <th>Отчество</th>
                 <th>Возраст</th>
                 <th></th>
+                @if (User.IsInRole(Role.Administrators))
+                {
+                    <th></th>
+                    <th></th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -39,12 +45,16 @@
                     <td>
                         <a class="btn btn-info" asp-action="Details" asp-route-Id="@employee.Id">Details</a>
                     </td>
-                    <td>
-                        <a class="btn btn-warning" asp-action="Edit" asp-route-Id="@employee.Id">Edit</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-danger" asp-action="Delete" asp-route-Id="@employee.Id">Delete</a>
-                    </td>
+                    @if (User.IsInRole(Role.Administrators))
+                    {
+                        <td>
+                            <a class="btn btn-warning" asp-action="Edit" asp-route-Id="@employee.Id">Edit</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-Id="@employee.Id">Delete</a>
+                        </td>
+                    }
+
                 </tr>
             }
         </tbody>
