@@ -23,9 +23,9 @@ namespace WebStore.Infrastructure.Services
 
         public IEnumerable<Product> GetProducts(ProductFilter Filter = null)
         {
-            IQueryable<Product> query = _db.Products;
-            //.Include(p => p.Section)
-            //.Include(p => p.Brand);
+            IQueryable<Product> query = _db.Products
+            .Include(p => p.Section)
+            .Include(p => p.Brand);
 
             if (Filter?.Ids?.Length > 0)
                 query = query.Where(product => Filter.Ids.Contains(product.Id));
@@ -39,6 +39,23 @@ namespace WebStore.Infrastructure.Services
             }
 
             return query;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByPage(int page, int pageSize = 3)
+        {
+            IQueryable<Product> source = _db.Products;
+            var count = await source.CountAsync();
+            var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return items;
+        }
+
+        public async Task<int> GetProductsCount()
+        {
+            IQueryable<Product> source = _db.Products;
+            var count = await source.CountAsync();
+
+            return count;
         }
 
         public Product GetProductById(int id) => _db.Products

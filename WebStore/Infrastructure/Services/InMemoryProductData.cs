@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebStore.Data;
 using WebStore.Domain;
 using WebStore.Domain.Entities;
@@ -27,5 +28,14 @@ namespace WebStore.Infrastructure.Services.InMemory
         }
 
         public Product GetProductById(int id) => TestData.Products.FirstOrDefault(p => p.Id == id);
+        public Task<IEnumerable<Product>> GetProductsByPage(int page, int pageSize = 3)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<int> GetProductsCount()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
