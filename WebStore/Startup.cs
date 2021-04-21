@@ -29,9 +29,14 @@ namespace WebStore
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(options => 
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 );
+
+            //services.AddDbContext<AppDbContext>(opt =>
+            //    opt.UseSqlite(
+            //        Configuration.GetConnectionString("Sqlite"),
+            //        o => o.MigrationsAssembly("WebStore.DAL.Sqlite")));
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -77,6 +82,8 @@ namespace WebStore
 
             services.AddTransient<ICartServices, InCookiesCartService>();
 
+            services.AddTransient<IOrderService, InDbOrderService>();
+
             services.AddTransient<IPrinter, StoragePrinter>();
 
             services.AddTransient<IMessageStorage, MessageStorege>();
@@ -105,6 +112,11 @@ namespace WebStore
                 {
                     await context.Response.WriteAsync("Hello World!");
                 });
+
+                endpoints.MapControllerRoute(
+                    name: "areas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
 
                 endpoints.MapControllerRoute(
                     "default",

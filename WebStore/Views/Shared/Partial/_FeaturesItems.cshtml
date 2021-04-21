@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ProductViewModel>
+﻿@using WebStore.Domain.Entities
+@model IEnumerable<ProductViewModel>
 
 <div class="features_items">
     <!--features_items-->
@@ -19,6 +20,22 @@
                            class="btn btn-default add-to-cart">
                             <i class="fa fa-shopping-cart"></i>В корзину
                         </a>
+                        @if (User.IsInRole(Role.Administrators))
+                        {
+                            <form method="post" enctype="multipart/form-data" asp-controller="Catalog" asp-action="Index" asp-route-id="@product.Id">
+                                <div class="form-group">
+                                    <div class="col-md-10">
+                                        <p>Загрузите фото продукта</p>
+                                        <input type="file" name="file" accept="image/*" />
+                                    </div>
+                                </div>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="submit" value="Загрузить" />
+                                        </div>
+                                    </div>
+                            </form>
+                        }
                     </div>
                     <div class="product-overlay">
                         <div class="overlay-content">
