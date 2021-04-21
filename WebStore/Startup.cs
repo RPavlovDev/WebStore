@@ -14,6 +14,7 @@ using WebStore.DAL.Context;
 using WebStore.Data;
 using WebStore.Domain.Entities;
 using WebStore.Infrastructure.Services;
+using WebStore.Infrastructure.Services.InCookies;
 using WebStore.Infrastructure.Services.Interfaces;
 
 namespace WebStore
@@ -73,6 +74,8 @@ namespace WebStore
             services.AddTransient<IEmployeesData, InMemoryEmployeesData>();
 
             services.AddTransient<IProductData, InDbProductData>();
+
+            services.AddTransient<ICartServices, InCookiesCartService>();
 
             services.AddTransient<IPrinter, StoragePrinter>();
 

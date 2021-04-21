@@ -10,6 +10,7 @@ using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {
+    [Authorize]
     public class EmployeesController : Controller
     {
         private readonly IEmployeesData _EmployeesData;
@@ -42,7 +43,7 @@ namespace WebStore.Controllers
             });
         }
 
-        [Authorize(Roles = "moderator")]
+        [Authorize(Roles = Role.Administrators)]
         public IActionResult Edit(int? Id)
         {
             if (Id is null)
@@ -65,10 +66,10 @@ namespace WebStore.Controllers
             });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Role.Administrators)]
         public IActionResult Create() => View("Edit", new EmployeeViewModel());
 
-        [Authorize(Roles = "moderator")]
+        [Authorize(Roles = Role.Administrators)]
         [HttpPost]
         public IActionResult Edit(EmployeeViewModel modifiedEmployee)
         {
@@ -112,7 +113,7 @@ namespace WebStore.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Role.Administrators)]
         public IActionResult Delete(int Id)
         {
             var employee = _EmployeesData.Get(Id);
@@ -132,8 +133,8 @@ namespace WebStore.Controllers
             });
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpPost]
+        [Authorize(Roles = Role.Administrators)]
+        [HttpPost] 
         public IActionResult Delete(EmployeeViewModel deletingEmployee)
         {
             var employee = _EmployeesData.Get(deletingEmployee.Id);

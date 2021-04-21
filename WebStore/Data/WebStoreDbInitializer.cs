@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using WebStore.DAL.Context;
+using WebStore.Domain.Entities;
 
 namespace WebStore.Data
 {
     public class WebStoreDbInitializer
     {
         private readonly AppDbContext _db;
+        private readonly UserManager<User> _UserManager;
+        private readonly RoleManager<Role> _RoleManager;
         private readonly ILogger<WebStoreDbInitializer> _Logger;
 
-        public WebStoreDbInitializer(AppDbContext db, ILogger<WebStoreDbInitializer> Logger)
+        public WebStoreDbInitializer(
+            AppDbContext db,
+            UserManager<User> UserManager,
+            RoleManager<Role> RoleManager,
+            ILogger<WebStoreDbInitializer> Logger)
         {
             _db = db;
+            _UserManager = UserManager;
+            _RoleManager = RoleManager;
             _Logger = Logger;
         }
 
@@ -35,7 +46,6 @@ namespace WebStore.Data
             try
             {
                 InitializeProducts();
-                InitializeEmployees();
             }
             catch (Exception e)
             {
@@ -43,26 +53,17 @@ namespace WebStore.Data
                 throw;
             }
 
+            try
+            {
+                InitializeIdentityAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                _Logger.LogError(e, "Ошибка при инициализации данных системы Identity");
+                throw;
+            }
+
             _Logger.LogInformation("Инициализация БД выполнена успешно");
-        }
-
-        private void InitializeEmployees()
-        {
-            if (_db.Employees.Any())
-            {
-                _Logger.LogInformation("Инициализация сотрудников не нужна.");
-                return;
-            }
-
-            using (_db.Database.BeginTransaction())
-            {
-                _db.Employees.AddRange(TestData.Employees);
-
-                _db.SaveChanges();
-                _db.Database.CommitTransaction();
-            }
-
-            _Logger.LogInformation("Инициализация сотрудников завершена.");
         }
 
         private void InitializeProducts()
@@ -74,13 +75,7 @@ namespace WebStore.Data
                 return;
             }
 
-            if (_db.Employees.Any())
-            {
-                _Logger.LogInformation("Инициализация сотрудников не нужна.");
-                return;
-            }
-
-
+            _Logger.LogInformation("Инициализация секций...");
 
             var products_sections = TestData.Sections.Join(
                 TestData.Products,
@@ -136,6 +131,53 @@ namespace WebStore.Data
             }
 
             _Logger.LogInformation("Инициализация товаров завершена.");
+        }
+
+        private async Task InitializeIdentityAsync()
+        {
+            _Logger.LogInformation("Инициализация БД системы Identity");
+
+            async Task CheckRole(string RoleName)
+            {
+                if (!await _RoleManager.RoleExistsAsync(RoleName))
+                {
+                    _Logger.LogInformation("Роль {0} отсутствует. Создаю...", RoleName);
+                    await _RoleManager.CreateAsync(new Role { Name = RoleName });
+                    _Logger.LogInformation("Роль {0} создана успешно", RoleName);
+                }
+            }
+
+            await CheckRole(Role.Administrators);
+            await CheckRole(Role.Users);
+
+            if (await _UserManager.FindByNameAsync(User.Administrator) is null)
+            {
+                _Logger.LogInformation("Учётная запись администратора в БД отсутствует. Создаю...");
+
+                var admin = new User
+                {
+                    UserName = User.Administrator
+                };
+
+                var creation_result = await _UserManager.CreateAsync(admin, User.DefaultAdminPassword);
+                if (creation_result.Succeeded)
+                {
+                    _Logger.LogInformation("Учётная запись администратора создана успешно.");
+
+                    await _UserManager.AddToRoleAsync(admin, Role.Administrators);
+
+                    _Logger.LogInformation("Учётная запись администратора  наделена ролью администратора.");
+                }
+                else
+                {
+                    var errors = creation_result.Errors.Select(e => e.Description).ToArray();
+                    _Logger.LogInformation("Учётная запись администратора создана с ошибкой {0}", string.Join(",", errors));
+
+                    throw new InvalidOperationException($"Ошибка при создании учётной записи администратора: {string.Join(",", errors)}");
+                }
+            }
+
+            _Logger.LogInformation("Инициализация БД системы Identity выполнена");
         }
     }
 }
